@@ -3,48 +3,64 @@ import re
 import os
 
 REFIDS = {
-    "Klasse 4+5": 2281,
-    "Klasse 6+7": 15389,
-    "Klasse 8+9": 15391,
-    "Klasse 10+11": 11261,
-    "Analysis (Abitur)": 6068,
-    "Algebra (Abitur)": 11393,
-    "Japanisch": 25548,
-    "Arabisch": 25574,
-    "Chinesisch": 25578,
-    "Deutsch": 25580,
-    "Englisch (AE)": 25540,
-    "Englisch (BE)": 25542,
-    "Französisch": 25544,
-    "Griechisch": 25552,
-    "Hebräisch": 25588,
-    "Hindi": 25572,
-    "Irisch": 25576,
-    "Italiensich": 25546,
-    "Koreanisch": 25570,
-    "Latein": 25550,
-    "Niederländisch": 25562,
-    "Persisch": 25586,
-    "Philippinisch": 25568,
-    "Polnisch": 25564,
-    "Portugiesisch": 25566,
-    "Russisch": 25558,
-    "Schwedisch": 25582,
-    "Spanisch (Lateinamerika)": 25556,
-    "Spanisch (Spanien)": 25554,
-    "Türkisch": 25560,
-    "Vietnamesisch": 25584,
-    "Robotik Smarttech": 43045,
-    "Robotik und Coding": 41646,
-    "Technik und Statik": 42125,
-    "Physik": 7507,
-    "Biologie": 9799,
-    "Human-Medizin": 5310,
-    "Chemie": 40880,
-    "Finanzwesen": 15378,
-    "BWL": 40594,
-    "Volkswirtschaft": 11740,
+    "Klasse 4+5": [2281, 0],
+    "Klasse 6+7": [15389, 0],
+    "Klasse 8+9": [15391, 0],
+    "Klasse 10+11": [11261, 0],
+    "Analysis (Abitur)": [6068, 0],
+    "Algebra (Abitur)": [11393, 0],
+    "Japanisch": [25548, 0],
+    "Arabisch": [25574, 0],
+    "Chinesisch": [25578, 0],
+    "Deutsch": [25580, 0],
+    "Englisch (AE)": [25540, 0],
+    "Englisch (BE)": [25542, 0],
+    "Französisch": [25544, 0],
+    "Griechisch": [25552, 0],
+    "Hebräisch": [25588, 0],
+    "Hindi": [25572, 0],
+    "Irisch": [25576, 0],
+    "Italiensich": [25546, 0],
+    "Koreanisch": [25570, 0],
+    "Latein": [25550, 0],
+    "Niederländisch": [25562, 0],
+    "Persisch": [25586, 0],
+    "Philippinisch": [25568, 0],
+    "Polnisch": [25564, 0],
+    "Portugiesisch": [25566, 0],
+    "Russisch": [25558, 0],
+    "Schwedisch": [25582, 0],
+    "Spanisch (Lateinamerika)": [25556, 0],
+    "Spanisch (Spanien)": [25554, 0],
+    "Türkisch": [25560, 0],
+    "Vietnamesisch": [25584, 0],
+    "Robotik Smarttech": [43045, 0],
+    "Robotik und Coding": [41646, 0],
+    "Technik und Statik": [42125, 0],
+    "Physik": [7507, 0],
+    "Biologie": [9799, 0],
+    "Human-Medizin": [5310, 0],
+    "Chemie": [40880, 0],
+    "Finanzwesen": [15378, 0],
+    "BWL": [40594, 0],
+    "Volkswirtschaft": [11740, 0],
 }
+
+
+class Id:
+    def __init__(self, s):
+        self.s = s
+
+    def __call__(self, k):
+        if n := REFIDS[k][1]:
+            return n
+        else:
+            REFIDS[k][1] = self.s
+            self.s += 1
+            return self.s - 1
+
+
+ID = Id(3)
 
 _user_vorlage = (
     lambda fname, lname, email, gender, kurs, sdate, edate, user, pw: f"""
@@ -52,8 +68,8 @@ _user_vorlage = (
   <Active><![CDATA[true]]></Active>
   <Role Id="_1" Type="Global" Action="Assign"><![CDATA[User]]></Role>
   <Role Id="_2" Type="Local" Action="Assign"><![CDATA[il_crs_member_37553]]></Role>
-{"".join([f'''  <Role Id="_{i+3}" Type="Local" Action="Assign"><![CDATA[il_crs_member_{n}]]></Role>
-''' for i,n in enumerate(kurs)])}
+{"".join([f'''  <Role Id="_{ID(k)}" Type="Local" Action="Assign"><![CDATA[il_crs_member_{REFIDS[k][0]}]]></Role>
+''' for k in kurs])}
   <Login><![CDATA[{user.upper()}]]></Login>
   <Password Type="PLAIN">{pw}</Password>
   <Gender><![CDATA[{gender}]]></Gender>
@@ -81,15 +97,7 @@ def validate(vals):
         gender = "f"
     elif vals["gender"] == "Keine Angabe":
         gender = "n"
-    kurs = []
-    for val in vals["math"]:
-        kurs.append(REFIDS[val])
-    for val in vals["lang"]:
-        kurs.append(REFIDS[val])
-    for val in vals["stip"]:
-        kurs.append(REFIDS[val])
-    for val in vals["prop"]:
-        kurs.append(REFIDS[val])
+    kurs = vals["math"] + vals["lang"] + vals["stip"] + vals["prop"]
     if not re.match("^\\d{4}-\\d{2}-\\d{2}$", vals["sdate"]):
         return "Startdatum"
     if not re.match("^\\d{4}-\\d{2}-\\d{2}", vals["edate"]):

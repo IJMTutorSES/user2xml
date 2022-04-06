@@ -45,7 +45,7 @@ class MyDialog(simpledialog.Dialog):
 class App:
     def __init__(self, root):
         self.session = (
-            str(date.today()).replace("-", "") + "_ " + str(random.randint(100, 999))
+            str(date.today()).replace("-", "") + "_" + str(random.randint(100, 999))
         )
 
         self.root = root
@@ -205,6 +205,7 @@ class App:
             self.etrs["stip"].grid(row=5, column=1, sticky="w")
         elif value == "Propädeutikum":
             self.etrs["prop"].grid(row=5, column=1, sticky="w")
+        self.clear_selection()
         self.root.geometry(f"{width}x{height}")
         self.btn.place(relx=0.5, y=height - 15, anchor=CENTER)
 
@@ -248,10 +249,7 @@ class App:
                     self.etrs["edate"],
                 ]:
                     etr.delete(0, END)
-                for i in self.etrs["math"].curselection():
-                    self.etrs["math"].selection_clear(i)
-                for i in self.etrs["lang"].curselection():
-                    self.etrs["lang"].selection_clear(i)
+                self.clear_selection()
                 self.etrs["courses"].insert(END, "Mathematik")
                 self.etrs["sdate"].insert(END, str(date.today()))
                 self.list_select(None)
@@ -262,6 +260,16 @@ class App:
                 + "Daten: im Format YYYY-MM-DD\n\n"
                 + "Bitte überprüfen Sie auch, ob sie in einem Feld ungewollte Leerzeichen eingegeben haben.",
             )
+
+    def clear_selection(self):
+        for i in self.etrs["math"].curselection():
+            self.etrs["math"].selection_clear(i)
+        for i in self.etrs["lang"].curselection():
+            self.etrs["lang"].selection_clear(i)
+        for i in self.etrs["stip"].curselection():
+            self.etrs["stip"].selection_clear(i)
+        for i in self.etrs["prop"].curselection():
+            self.etrs["prop"].selection_clear(i)
 
     def end_session(self):
         end_file(self.session)
