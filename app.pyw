@@ -151,9 +151,10 @@ class App:
             "BWL",
             "Volkswirtschaft",
         )
-        self.etrs["sdate"] = Entry(root, width=20)
+        vcmd = (root.register(self.validate), "%d", "%i", "%P", "%S", "%W")
+        self.etrs["sdate"] = Entry(root, width=20, validate="key", validatecommand=vcmd)
         self.etrs["sdate"].insert(END, str(date.today()))
-        self.etrs["edate"] = Entry(root, width=20)
+        self.etrs["edate"] = Entry(root, width=20, validate="key", validatecommand=vcmd)
 
         i = 0
         for _, val in self.etrs.items():
@@ -244,6 +245,7 @@ class App:
                     self.etrs["fname"],
                     self.etrs["lname"],
                     self.etrs["email"],
+                    self.etrs["gender"],
                     self.etrs["courses"],
                     self.etrs["sdate"],
                     self.etrs["edate"],
@@ -252,6 +254,7 @@ class App:
                 self.clear_selection()
                 self.etrs["courses"].insert(END, "Mathematik")
                 self.etrs["sdate"].insert(END, str(date.today()))
+                self.etrs["gender"].insert(END, "Herr")
                 self.list_select(None)
         else:
             messagebox.showerror(
@@ -270,6 +273,30 @@ class App:
             self.etrs["stip"].selection_clear(i)
         for i in self.etrs["prop"].curselection():
             self.etrs["prop"].selection_clear(i)
+
+    def validate(self, action, index, new_text, change, widget):
+        WIDGET = {".!entry4": "sdate", ".!entry5": "edate"}
+        if len(change) == 1:
+            if action == "1":
+                if change in "0123456789":
+                    if index == "4" or index == "7":
+                        self.etrs[WIDGET[widget]].insert(END, "-" + change)
+                        self.root.after_idle(
+                            lambda: self.etrs[WIDGET[widget]].config(validate="key")
+                        )
+                        return None
+                    elif index == "10":
+                        return False
+                else:
+                    return False
+            elif action == "0":
+                if index == "8" or index == "5":
+                    self.etrs[WIDGET[widget]].delete(str(int(index) - 1), END)
+                    self.root.after_idle(
+                        lambda: self.etrs[WIDGET[widget]].config(validate="key")
+                    )
+                    return None
+        return True
 
     def end_session(self):
         end_file(self.session)

@@ -85,9 +85,9 @@ _user_vorlage = (
 
 
 def validate(vals):
-    if not re.match("^\\w+$", vals["fname"]):
+    if not re.match("^[\\w\\- ]+$", vals["fname"]):
         return "Vorname"
-    if not re.match("^\\w+$", vals["lname"]):
+    if not re.match("^[\\w\\- ]+$", vals["lname"]):
         return "Nachname"
     if not parseaddr(vals["email"])[1]:
         return "E-Mail"
