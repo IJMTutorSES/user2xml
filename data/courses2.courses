@@ -1,0 +1,215 @@
+{
+    "categories": [
+        "Mathematik",
+        "Sprachen",
+        "Förderprogramm",
+        "Propädeutikum"
+    ],
+    "courses": [
+        {
+            "name": "Klasse 4+5",
+            "category": "Mathematik",
+            "refid": 2281
+        },
+        {
+            "name": "Klasse 6+7",
+            "category": "Mathematik",
+            "refid": 15389
+        },
+        {
+            "name": "Klasse 8+9",
+            "category": "Mathematik",
+            "refid": 15391
+        },
+        {
+            "name": "Klasse 10+11",
+            "category": "Mathematik",
+            "refid": 11261
+        },
+        {
+            "name": "Analysis (Abitur)",
+            "category": "Mathematik",
+            "refid": 6068
+        },
+        {
+            "name": "Algebra (Abitur)",
+            "category": "Mathematik",
+            "refid": 11393
+        },
+        {
+            "name": "Japanisch",
+            "category": "Sprachen",
+            "refid": 25548
+        },
+        {
+            "name": "Arabisch",
+            "category": "Sprachen",
+            "refid": 25574
+        },
+        {
+            "name": "Chinesisch",
+            "category": "Sprachen",
+            "refid": 25578
+        },
+        {
+            "name": "Deutsch",
+            "category": "Sprachen",
+            "refid": 25580
+        },
+        {
+            "name": "Englisch (AE)",
+            "category": "Sprachen",
+            "refid": 25540
+        },
+        {
+            "name": "Englisch (BE)",
+            "category": "Sprachen",
+            "refid": 25542
+        },
+        {
+            "name": "Französisch",
+            "category": "Sprachen",
+            "refid": 25544
+        },
+        {
+            "name": "Griechisch",
+            "category": "Sprachen",
+            "refid": 25552
+        },
+        {
+            "name": "Hebräisch",
+            "category": "Sprachen",
+            "refid": 25588
+        },
+        {
+            "name": "Hindi",
+            "category": "Sprachen",
+            "refid": 25572
+        },
+        {
+            "name": "Irisch",
+            "category": "Sprachen",
+            "refid": 25576
+        },
+        {
+            "name": "Italienisch",
+            "category": "Sprachen",
+            "refid": 25546
+        },
+        {
+            "name": "Koreanisch",
+            "category": "Sprachen",
+            "refid": 25570
+        },
+        {
+            "name": "Latein",
+            "category": "Sprachen",
+            "refid": 25550
+        },
+        {
+            "name": "Niederländisch",
+            "category": "Sprachen",
+            "refid": 25562
+        },
+        {
+            "name": "Persisch",
+            "category": "Sprachen",
+            "refid": 25586
+        },
+        {
+            "name": "Philippinisch",
+            "category": "Sprachen",
+            "refid": 25568
+        },
+        {
+            "name": "Polnisch",
+            "category": "Sprachen",
+            "refid": 25564
+        },
+        {
+            "name": "Portugiesisch",
+            "category": "Sprachen",
+            "refid": 25566
+        },
+        {
+            "name": "Russisch",
+            "category": "Sprachen",
+            "refid": 25558
+        },
+        {
+            "name": "Schwedisch",
+            "category": "Sprachen",
+            "refid": 25582
+        },
+        {
+            "name": "Spanisch (Lateinamerika)",
+            "category": "Sprachen",
+            "refid": 25556
+        },
+        {
+            "name": "Spanisch (Spanien)",
+            "category": "Sprachen",
+            "refid": 25554
+        },
+        {
+            "name": "Türkisch",
+            "category": "Sprachen",
+            "refid": 25560
+        },
+        {
+            "name": "Vietnamesisch",
+            "category": "Sprachen",
+            "refid": 25584
+        },
+        {
+            "name": "Robotik Smarttech",
+            "category": "Förderprogramm",
+            "refid": 43045
+        },
+        {
+            "name": "Robotik und Coding",
+            "category": "Förderprogramm",
+            "refid": 41646
+        },
+        {
+            "name": "Technik und Statik",
+            "category": "Förderprogramm",
+            "refid": 42125
+        },
+        {
+            "name": "Physik",
+            "category": "Propädeutikum",
+            "refid": 7507
+        },
+        {
+            "name": "Biologie",
+            "category": "Propädeutikum",
+            "refid": 9799
+        },
+        {
+            "name": "Human-Medizin",
+            "category": "Propädeutikum",
+            "refid": 5310
+        },
+        {
+            "name": "Chemie",
+            "category": "Propädeutikum",
+            "refid": 40880
+        },
+        {
+            "name": "Finanzwesen",
+            "category": "Propädeutikum",
+            "refid": 15378
+        },
+        {
+            "name": "BWL",
+            "category": "Propädeutikum",
+            "refid": 40594
+        },
+        {
+            "name": "Volkswirtschaft",
+            "category": "Propädeutikum",
+            "refid": 11740
+        }
+    ]
+}

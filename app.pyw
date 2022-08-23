@@ -9,21 +9,50 @@ from tkinter import (
     Button,
     CENTER,
     simpledialog,
+    filedialog
 )
 from tkinter.ttk import Combobox
 from datetime import date
+import os.path
 from export import export, validate, end_file
+from data_reader import Data, last_file
+import sys
 
-
-class MyDialog(simpledialog.Dialog):
-    def __init__(self, master, rlist):
+class DataDialog(simpledialog.Dialog):
+    def __init__(self, master, rlist, file):
         self.rlist = rlist
+        self.file = file
+        self.data_file = ""
+        super().__init__(master)
+    
+    def body(self, master):
+        l1 = Label(master, text="Kurse konnten nicht gefunden werden. Bitte wähle eine gültige Kurs-Datei.")
+        l1.grid(row=0)
+        self.l2 = Label(master, text="Datei: ")
+        b = Button(master, text="Öffnen", command=self.get_file)
+        self.l2.grid(row=1)
+        b.grid(row=2)
+        return b
+
+    def apply(self):
+        self.rlist.append(self.data_file)
+    
+    def get_file(self):
+        self.data_file = filedialog.askopenfilename(title="Öffne Kurs-Datei", initialdir=os.path.dirname(self.file), filetypes=(("Kurs-Datei", ".courses"),),)
+        self.l2["text"] = "Datei: " + self.data_file
+
+class ExportDialog(simpledialog.Dialog):
+    def __init__(self, master, rlist, courses):
+        self.rlist = rlist
+        self.courses = courses
         super().__init__(master)
 
     def body(self, master):
 
         l1 = Label(master, text="Benutzername:", anchor="w")
         l2 = Label(master, text="Passwort:", anchor="w")
+        l3 = Label(master, text="Kursauswahl:")
+        l4 = Label(master, text=self.courses)
 
         l1.grid(row=0)
         l2.grid(row=1)
@@ -34,6 +63,8 @@ class MyDialog(simpledialog.Dialog):
         self.e1.grid(row=0, column=1)
         self.e2.grid(row=1, column=1)
 
+        l3.grid(row=3)
+        l4.grid(row=3, column=1)
         return self.e1
 
     def apply(self):
@@ -47,7 +78,14 @@ class App:
         self.session = (
             str(date.today()).replace("-", "") + "_" + str(random.randint(100, 999))
         )
-
+        file = last_file()
+        if not Data.load_data(file):
+            datafile = []
+            DataDialog(root, datafile, file)
+            if not datafile or not Data.load_data(datafile[0]):
+                messagebox.showerror(title="Fehler - Kurs-Datei", message=f"Es wurde keine oder eine falsche Kurs-Datei geladen. {datafile}")
+                root.quit()
+                sys.exit()
         self.root = root
         self.root.title("user2xml")
         self.root.geometry("300x500")
@@ -71,95 +109,39 @@ class App:
 
         self.etrs = {}
         self.etrs["fname"] = Entry(root, width=20)
+        self.etrs["fname"].grid(row=0, column=1)
         self.etrs["lname"] = Entry(root, width=20)
+        self.etrs["lname"].grid(row=1, column=1)
         self.etrs["email"] = Entry(root, width=20)
+        self.etrs["email"].grid(row=2, column=1)
         self.etrs["gender"] = Combobox(
             root, width=17, values=["Herr", "Frau", "Keine Angabe"]
         )
         self.etrs["gender"].insert(END, "Herr")
+        self.etrs["gender"].grid(row=3, column=1)
         self.etrs["courses"] = Combobox(
             root,
             width=17,
-            values=["Mathematik", "Sprachen", "Beide", "Andere", "Propädeutikum"],
+            values=Data.CATEGORIES,
         )
         self.etrs["courses"].bind("<<ComboboxSelected>>", self.list_select)
-        self.etrs["courses"].insert(END, "Mathematik")
-        self.etrs["math"] = Listbox(
-            root, selectmode="multiple", exportselectio=0, width=20, height=6
-        )
-        self.etrs["math"].insert(
-            END,
-            "Klasse 4+5",
-            "Klasse 6+7",
-            "Klasse 8+9",
-            "Klasse 10+11",
-            "Analysis (Abitur)",
-            "Algebra (Abitur)",
-        )
-        self.etrs["lang"] = Listbox(
-            root, selectmode="multiple", exportselection=0, width=20, height=6
-        )
-        self.etrs["lang"].insert(
-            END,
-            "Japanisch",
-            "Arabisch",
-            "Chinesisch",
-            "Deutsch",
-            "Englisch (AE)",
-            "Englisch (BE)",
-            "Französisch",
-            "Griechisch",
-            "Hebräisch",
-            "Hindi",
-            "Irisch",
-            "Italiensich",
-            "Koreanisch",
-            "Latein",
-            "Niederländisch",
-            "Persisch",
-            "Philippinisch",
-            "Polnisch",
-            "Portugiesisch",
-            "Russisch",
-            "Schwedisch",
-            "Spanisch (Lateinamerika)",
-            "Spanisch (Spanien)",
-            "Türkisch",
-            "Vietnamesisch",
-        )
-        self.etrs["lang"].bind("<<ListboxSelect>>", self.listbox_select)
-        self.lang_selection = self.etrs["lang"].curselection()
-        self.etrs["stip"] = Listbox(
-            root, selectmode="multiple", exportselection=0, height=6, width=20
-        )
-        self.etrs["stip"].insert(
-            END,
-            "Robotik Smarttech",
-            "Robotik und Coding",
-            "Technik und Statik",
-        )
-        self.etrs["prop"] = Listbox(
-            root, selectmode="multiple", exportselection=0, height=6, width=20
-        )
-        self.etrs["prop"].insert(
-            END,
-            "Physik",
-            "Chemie",
-            "Biologie",
-            "Human-Medizin",
-            "Finanzwesen",
-            "BWL",
-            "Volkswirtschaft",
-        )
+        self.etrs["courses"].insert(END, Data.CATEGORIES[0])
+        self.etrs["courses"].grid(row=4, column=1)
+        for cat in Data.CATEGORIES:
+            self.etrs[cat] = Listbox(
+                root, selectmode="multiple", exportselection=0, height=6, width=20
+            )
+            self.etrs[cat].insert(
+                END,
+                *Data.COURSES[cat]
+            )
         vcmd = (root.register(self.validate), "%d", "%i", "%P", "%S", "%W")
         self.etrs["sdate"] = Entry(root, width=20, validate="key", validatecommand=vcmd)
-        self.etrs["sdate"].insert(END, str(date.today()))
+        self.etrs["sdate"].insert(END, "-".join(str(date.today()).split("-")[::-1]))
+        self.etrs["sdate"].grid(row=6, column=1)
         self.etrs["edate"] = Entry(root, width=20, validate="key", validatecommand=vcmd)
-
-        i = 0
-        for _, val in self.etrs.items():
-            val.grid(row=i, column=1, sticky="w")
-            i += 1
+        self.etrs["edate"].grid(row=7, column=1)
+            
 
         self.btn = Button(
             root,
@@ -171,58 +153,16 @@ class App:
 
         self.root.mainloop()
 
-    def listbox_select(self, a):
-        if len(sel := self.etrs["lang"].curselection()) > 2:
-            for i in set(sel) ^ set(self.lang_selection):
-                self.etrs["lang"].selection_clear(i)
-            messagebox.showwarning(
-                "Sprachenauswahl",
-                message="Es dürfen nur zwei Sprachen ausgewählt werden.",
-            )
-        self.lang_selection = self.etrs["lang"].curselection()
-
     def list_select(self, a):
         value = self.etrs["courses"].get()
-        width = 205
-        height = 280
         self.hide_all()
-        if value == "Sprachen":
-            self.etrs["lang"].grid(row=5, column=1, sticky="w")
-        elif value == "Mathematik":
-            self.etrs["math"].grid(row=5, column=1, sticky="w")
-        elif value == "Beide":
-            self.etrs["sdate"].grid_forget()
-            self.etrs["edate"].grid_forget()
-            self.lbls["sdate"].grid_forget()
-            self.lbls["edate"].grid_forget()
-            self.etrs["math"].grid(row=5, column=1, sticky="w")
-            self.etrs["lang"].grid(row=6, column=1, sticky="w")
-            self.etrs["sdate"].grid(row=7, column=1, sticky="w")
-            self.etrs["edate"].grid(row=8, column=1, sticky="w")
-            self.lbls["sdate"].grid(row=7, column=0, sticky="w")
-            self.lbls["edate"].grid(row=8, column=0, sticky="w")
-            height = 380
-        elif value == "Andere":
-            self.etrs["stip"].grid(row=5, column=1, sticky="w")
-        elif value == "Propädeutikum":
-            self.etrs["prop"].grid(row=5, column=1, sticky="w")
-        self.clear_selection()
-        self.root.geometry(f"{width}x{height}")
-        self.btn.place(relx=0.5, y=height - 15, anchor=CENTER)
+        self.etrs[value].grid(row=5, column=1, sticky="w")
+        self.root.geometry(f"205x280")
+        self.btn.place(relx=0.5, y=265, anchor=CENTER)
 
     def hide_all(self):
-        self.etrs["math"].grid_forget()
-        self.etrs["lang"].grid_forget()
-        self.etrs["stip"].grid_forget()
-        self.etrs["prop"].grid_forget()
-        self.etrs["sdate"].grid_forget()
-        self.etrs["edate"].grid_forget()
-        self.lbls["sdate"].grid_forget()
-        self.lbls["edate"].grid_forget()
-        self.etrs["sdate"].grid(row=6, column=1, sticky="w")
-        self.etrs["edate"].grid(row=7, column=1, sticky="w")
-        self.lbls["sdate"].grid(row=6, column=0, sticky="w")
-        self.lbls["edate"].grid(row=7, column=0, sticky="w")
+        for cat in Data.CATEGORIES:
+            self.etrs[cat].grid_forget()
 
     def export(self):
         vals = {}
@@ -235,8 +175,8 @@ class App:
                 continue
         if isinstance(prop := validate(vals), tuple):
             login = []
-            MyDialog(self.root, login)
-            if len(login[0]) > 3 and len(login[1]) > 3:
+            ExportDialog(self.root, login, "\n".join(("\n".join(self.etrs[cat].get(i) for i in self.etrs[cat].curselection()) for cat in Data.CATEGORIES if self.etrs[cat].curselection())))
+            if login and len(login[0]) > 3 and len(login[1]) > 3:
                 export(vals, prop, login, self.session)
                 messagebox.showinfo(
                     "Info", message=f"XML-Datei wurde erstellt. ({self.session})"
@@ -255,31 +195,30 @@ class App:
                 self.etrs["courses"].insert(END, "Mathematik")
                 self.etrs["sdate"].insert(END, str(date.today()))
                 self.etrs["gender"].insert(END, "Herr")
+                self.btn = Button(
+                    self.root,
+                    text="Zu XML-Datei hinzufügen",
+                    command=self.export,
+                )
                 self.list_select(None)
         else:
             messagebox.showerror(
                 f"Fehler - {prop}",
                 message="XML-Dateien konnten nicht erstellt werden. Bitte überprüfen Sie Ihre Eingaben.\n\n"
-                + "Daten: im Format YYYY-MM-DD\n\n"
                 + "Bitte überprüfen Sie auch, ob sie in einem Feld ungewollte Leerzeichen eingegeben haben.",
             )
 
     def clear_selection(self):
-        for i in self.etrs["math"].curselection():
-            self.etrs["math"].selection_clear(i)
-        for i in self.etrs["lang"].curselection():
-            self.etrs["lang"].selection_clear(i)
-        for i in self.etrs["stip"].curselection():
-            self.etrs["stip"].selection_clear(i)
-        for i in self.etrs["prop"].curselection():
-            self.etrs["prop"].selection_clear(i)
+        for cat in Data.CATEGORIES:
+            for i in self.etrs[cat].curselection():
+                self.etrs[cat].selection_clear(i)
 
     def validate(self, action, index, new_text, change, widget):
         WIDGET = {".!entry4": "sdate", ".!entry5": "edate"}
         if len(change) == 1:
             if action == "1":
                 if change in "0123456789":
-                    if index == "4" or index == "7":
+                    if index == "2" or index == "5":
                         self.etrs[WIDGET[widget]].insert(END, "-" + change)
                         self.root.after_idle(
                             lambda: self.etrs[WIDGET[widget]].config(validate="key")
@@ -290,7 +229,7 @@ class App:
                 else:
                     return False
             elif action == "0":
-                if index == "8" or index == "5":
+                if index == "3" or index == "6":
                     self.etrs[WIDGET[widget]].delete(str(int(index) - 1), END)
                     self.root.after_idle(
                         lambda: self.etrs[WIDGET[widget]].config(validate="key")
