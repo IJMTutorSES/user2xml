@@ -210,6 +210,11 @@
             "name": "Volkswirtschaft",
             "category": "Propädeutikum",
             "refid": 11740
+        },
+        {
+            "name": "Informatik",
+            "category": "Propädeutikum",
+            "refid": 42932
         }
     ]
 }

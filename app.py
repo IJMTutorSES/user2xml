@@ -26,7 +26,7 @@ class DataDialog(simpledialog.Dialog):
         super().__init__(master)
     
     def body(self, master):
-        l1 = Label(master, text="Kurse konnten nicht gefunden werden. Bitte wähle eine gültige Kurs-Datei.")
+        l1 = Label(master, text=f"Kurse konnten nicht gefunden werden. Bitte wähle eine gültige Kurs-Datei. {self.file}")
         l1.grid(row=0)
         self.l2 = Label(master, text="Datei: ")
         b = Button(master, text="Öffnen", command=self.get_file)

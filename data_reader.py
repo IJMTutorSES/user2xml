@@ -11,13 +11,16 @@ class Data:
     @classmethod
     def load_data(cls, file):
         if not os.path.isfile(file) or not os.path.splitext(file)[1] == ".courses":
-            return "Wrong "
+            return False
         if not os.path.exists("data/datafile.meta"):
             if getattr(sys, "frozen", False):
+                print("Yes")
                 with open(os.path.join(sys._MEIPASS, "data/datafile.meta"), "w", encoding="utf-8") as f:
                     f.write(file)
+                    print(file)
         else:
             with open("data/datafile.meta", "w") as f:
+                print("Here")
                 f.write(file)
         with open(file, "r", encoding="utf-8") as f:
             data = json.load(f)
